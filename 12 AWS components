@@ -1,0 +1,98 @@
+****12 AWS components****
+
+**A. Request entry and routing**
+
+1. Amazon Route 53 — DNS
+Converts a domain name into DNS records that direct the client toward the correct endpoint.
+- Example: api.example.com
+- Can route traffic to CloudFront, an API Gateway custom domain, a load balancer, or other supported targets.
+- It does not necessarily return the backend server's IP address; the answer depends on the DNS record and target.
+
+2. Amazon CloudFront — CDN
+Caches and delivers content through globally distributed edge locations.
+- Static files: images, CSS, JavaScript, videos.
+- Dynamic content and APIs can also pass through CloudFront.
+- A cache hit can be served directly; a cache miss is forwarded to the configured origin.
+- CloudFront is optional, not mandatory for every application.
+
+3. Amazon API Gateway — API entry point
+Publishes and manages APIs, then sends requests to configured integrations.
+- Handles API routes, authorization, throttling, and request/response configuration.
+- Can integrate with Lambda or HTTP backends, among other supported integrations.
+- Example: GET /users/123
+- It is not itself the application database or business-logic engine.
+
+
+**B. Compute — where application code runs**
+
+4. Amazon EC2 — Virtual servers
+You provision virtual machines to run your application.
+- You manage the operating system, application runtime, patches, and installed software.
+- AWS manages the underlying physical infrastructure.
+- You have significant control over the environment.
+- Best when you need operating-system access, custom configurations, or long-running workloads.
+
+5. Amazon ECS — Container orchestration
+Runs and manages containerized applications, commonly packaged as Docker images.
+- Useful for web applications, REST APIs, and background workers.
+- ECS schedules tasks, maintains desired service capacity, and integrates with load balancers.
+- With ECS on Fargate, AWS manages the underlying server infrastructure.
+- With ECS on EC2, you are responsible for managing the EC2 container instances as well.
+
+6. AWS Lambda — Serverless compute
+Executes code in response to events or requests without requiring you to manage servers.
+- Commonly invoked by API Gateway, SQS, S3 events, and other AWS services.
+- AWS manages the execution infrastructure and runtime environment.
+- You write the function code and manage its dependencies, configuration, and permissions.
+- Scaling and billing depend on the function's configuration and execution model.
+
+EC2 vs ECS vs Lambda: EC2 gives you virtual-machine control; ECS manages containerized workloads; Lambda executes functions in response to events. ECS and Lambda can both be serverless in the infrastructure-management sense when using the appropriate configuration.
+
+**C. Database, storage, and asynchronous processing**
+
+7. Amazon RDS — Relational database
+Managed relational database service for structured data and SQL queries.
+- Supports engines such as PostgreSQL, MySQL, and SQL Server.
+- Uses tables, relationships, constraints, and transactions.
+- Suitable for orders, payments, user records, and other relational data.
+- AWS manages many database administration tasks, but you still manage schema, queries, access, and configuration.
+
+8. Amazon DynamoDB — NoSQL database
+Managed key-value and document database designed for scalable, low-latency access patterns.
+- Stores items in tables with attributes.
+- Does not require the traditional relational table-and-join model.
+- Suitable for shopping carts, sessions, device state, and high-throughput applications.
+- You must design keys and indexes around your access patterns.
+
+9. Amazon SQS — Message queue
+Decouples services by storing messages until a consumer processes them.
+Example: a user submits an order, the API records the order and sends a message to SQS, and a worker processes email notifications or other background tasks.
+- The user does not have to wait for every background task to finish.
+- Helps absorb traffic spikes and control processing rates.
+- SQS does not automatically run the worker; ECS, Lambda, or another consumer must process messages.
+- Standard queues can deliver messages more than once, so consumers should handle duplicates safely.
+
+10. Amazon S3 — Object storage
+Stores files as objects in buckets.
+- Images, videos, documents, backups, logs, and static website assets.
+- Supports durability, lifecycle policies, and access controls.
+- It is not a relational database or a general-purpose mounted file system.
+- Applications commonly store file metadata in RDS or DynamoDB while storing the actual files in S3.
+
+
+
+**D. Monitoring and security**
+
+11. Amazon CloudWatch — Monitoring and observability
+Collects metrics and logs and supports alarms and dashboards.
+- Monitor Lambda errors, API latency, EC2 CPU utilization, and queue depth.
+- Configure alarms for failures or unusual resource utilization.
+- Can trigger notifications or automated responses through integrations.
+- Helps you detect and troubleshoot problems; it does not replace application security.
+
+12. AWS IAM — Identity and access management
+Controls which identities can perform which actions on which AWS resources.
+- Uses users, groups, roles, and policies.
+- Example: allow a Lambda execution role to read specific objects from an S3 bucket.
+- Prefer temporary credentials and IAM roles for applications running on AWS.
+- IAM permissions for AWS resources are different from authenticating your application's end users.
